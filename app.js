@@ -5,12 +5,15 @@ const gallery = document.querySelector(".gallery");
 //   "https://api.pexels.com/v1/search?query=nature&per_page=1"
 const moreBtn = document.querySelector(".more-btn .btn");
 let searchValue;
-let i = 15;
+let i = 0;
 let fetchLink;
+let currentSearch;
+
 searchBar.addEventListener("input", searchStuffs);
 
 searchForm.addEventListener("submit", (e) => {
   e.preventDefault();
+  currentSearch = searchValue;
   searchPhotos(searchValue);
 });
 
@@ -65,11 +68,17 @@ async function searchPhotos(query) {
 }
 
 async function fetchMore(e) {
-  i += 2;
-  let moreData = await fetchApi(
-    `https://api.pexels.com/v1/curated?per_page=${i}&page=1`
-  );
-  generateData(moreData);
+  i += 1;
+
+  if (currentSearch) {
+    fetchLink = `https://api.pexels.com/v1/search?query=${currentSearch}&per_page=${i}`;
+    let formatted = await fetchApi(fetchLink);
+    generateData(formatted);
+  } else {
+    fetchLink = `https://api.pexels.com/v1/curated?per_page=15&page=${i}`;
+    let formatted = await fetchApi(fetchLink);
+    generateData(formatted);
+  }
 }
 
 function clear() {
